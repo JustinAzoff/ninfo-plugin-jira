@@ -1,6 +1,6 @@
 from ninfo import PluginBase
 from ninfo import util
-import ieemac
+import ieeemac
 
 class jira_plug(PluginBase):
     """Search Jira for issues"""
