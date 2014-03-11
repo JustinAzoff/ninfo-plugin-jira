@@ -1,4 +1,6 @@
 from ninfo import PluginBase
+from ninfo import util
+import ieemac
 
 class jira_plug(PluginBase):
     """Search Jira for issues"""
@@ -6,14 +8,32 @@ class jira_plug(PluginBase):
     title         = 'Jira'
     description   = 'Jira'
     cache_timeout = 60*60
-    types         = ['ip','ip6','cidr', 'cidr6', 'hostname','username','hash']
-    #local        = False
-    #remove       = False
+    types         = ['ip','ip6', 'mac']
+    remote       = False
 
     def setup(self):
-        pass
+        from jira.client import JIRA
+        server = self.plugin_config["server"]
+        user   = self.plugin_config["user"]
+        pw     = self.plugin_config["password"]
+        proj   = self.plugin_config["project"]
+
+        self.jira = JIRA(options={'server': server}, basic_auth=(user, pw))
+        self.project = proj
 
     def get_info(self, arg):
-        return {}
+        if util.get_type(arg) == "mac":
+            field = 'MAC Address'
+            #work around jira being dumb:
+            #Unable to parse the text '00:11:22:33:44:55' for field 'MAC Address'.
+            arg = ieeemac.Mac(arg).to_unix.replace(":", " ")
+        else:
+            field = 'IP Address'
+
+        q = 'project="%s" AND "%s" ~ "%s"' % (self.project, field, arg)
+        issues = self.jira.search_issues(q)
+
+        issue_dicts = [issue.raw for issue in issues]
+        return {"issues": issue_dicts}
 
 plugin_class = jira_plug
