@@ -1,4 +1,8 @@
-ninfo-plugin-jira
-=============================
+Configuration:
+===============
 
-Jira
+    [plugin:jira]
+    server = https://jira.example.com
+    user = jira user
+    password = jirapassword
+    project = PROJECT
