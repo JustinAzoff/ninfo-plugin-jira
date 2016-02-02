@@ -16,7 +16,7 @@ setup(name='ninfo-plugin-jira',
     include_package_data=True,
     install_requires=[
         "ninfo",
-        "jira-python",
+        "jira",
     ],
     entry_points = {
         'ninfo.plugin': [
